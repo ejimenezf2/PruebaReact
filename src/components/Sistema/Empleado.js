@@ -11,6 +11,8 @@ const Empleado = () => {
   const [estadosVacuna, setEstadosVacuna] = useState([]);
   const [show, setShow] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [reportData, setReportData] = useState(null);
   const [form, setForm] = useState({
     cod_Empleado: '',
     nombre: '',
@@ -18,6 +20,7 @@ const Empleado = () => {
     puesto_Laboral: '',
     id_Vacuna: '',
     fecha_Primer_Dosis: '',
+    fecha_Segunda_Dosis: '',
     estado_Vacunacion: '',
   });
   const [editForm, setEditForm] = useState({
@@ -27,6 +30,7 @@ const Empleado = () => {
     puesto_Laboral: '',
     id_Vacuna: '',
     fecha_Primer_Dosis: '',
+    fecha_Segunda_Dosis: '',
     estado_Vacunacion: '',
   });
 
@@ -65,6 +69,7 @@ const Empleado = () => {
   const handleClose = () => setShow(false);
   const handleShowEdit = () => setShowEdit(true);
   const handleCloseEdit = () => setShowEdit(false);
+  const handleCloseReport = () => setShowReport(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -81,6 +86,7 @@ const Empleado = () => {
       [name]: value
     }));
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const existingEmployee = data.find(emp => emp.cod_Empleado === parseInt(form.cod_Empleado));
@@ -93,14 +99,14 @@ const Empleado = () => {
       });
       return;
     }
-  
+
     const formData = {
       ...form,
       id_Vacuna: form.id_Vacuna === '' ? null : form.id_Vacuna,
       fecha_Primer_Dosis: form.fecha_Primer_Dosis === '' ? null : form.fecha_Primer_Dosis,
       fecha_Segunda_Dosis: form.fecha_Segunda_Dosis === '' ? null : form.fecha_Segunda_Dosis
     };
-  
+
     axios.post('http://localhost:5211/api/Empleado/Crear', formData)
       .then(response => {
         fetchData();
@@ -132,7 +138,7 @@ const Empleado = () => {
         });
       });
   };
-  
+
   const handleEditSubmit = (e) => {
     e.preventDefault();
     const formData = {
@@ -141,7 +147,7 @@ const Empleado = () => {
       fecha_Primer_Dosis: editForm.fecha_Primer_Dosis === '' ? null : editForm.fecha_Primer_Dosis,
       fecha_Segunda_Dosis: editForm.fecha_Segunda_Dosis === '' ? null : editForm.fecha_Segunda_Dosis
     };
-  
+
     axios.put('http://localhost:5211/api/Empleado/Editar', formData)
       .then(response => {
         fetchData();
@@ -167,7 +173,6 @@ const Empleado = () => {
         console.error('Error updating employee:', error);
       });
   };
-  
 
   const handleEditClick = (cod_Empleado) => {
     axios.get(`http://localhost:5211/api/Empleado/Obtener/${cod_Empleado}`)
@@ -186,7 +191,6 @@ const Empleado = () => {
         console.error('Error fetching employee data:', error);
       });
   };
-  
 
   const handleDeleteClick = (cod_Empleado) => {
     Swal.fire({
@@ -213,6 +217,17 @@ const Empleado = () => {
           });
       }
     });
+  };
+
+  const handleReportClick = (cod_Empleado) => {
+    axios.get(`http://localhost:5211/api/Empleado/Reporte/${cod_Empleado}`)
+      .then(response => {
+        setReportData(response.data);
+        setShowReport(true);
+      })
+      .catch(error => {
+        console.error('Error fetching report data:', error);
+      });
   };
 
   const columns = React.useMemo(
@@ -262,6 +277,9 @@ const Empleado = () => {
             <button className="btn btn-danger btn-sm" onClick={() => handleDeleteClick(row.original.cod_Empleado)}>
               <i className="fas fa-trash"></i>
             </button>
+            <button className="btn btn-info btn-sm" onClick={() => handleReportClick(row.original.cod_Empleado)}>
+              <i className="fas fa-file-alt"></i>
+            </button>
           </div>
         ),
       },
@@ -300,7 +318,7 @@ const Empleado = () => {
           <div className="card">
             <div className="card-header d-flex justify-content-between align-items-center">
               <h3 className="card-title mb-0">Empleado</h3>
-              <button className="btn btn-primary ms-auto" onClick={handleShow} style={{ width: 'auto' }}>Crear</button>
+              <button className="btn btn-primary ms-auto" onClick={handleShow} style={{ width: 'auto' }}>Crear</button>  
             </div>
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center mb-3">
@@ -484,7 +502,6 @@ const Empleado = () => {
         </Modal.Body>
       </Modal>
 
-
       <Modal show={showEdit} onHide={handleCloseEdit}>
         <Modal.Header closeButton>
           <Modal.Title>Editar Empleado</Modal.Title>
@@ -588,6 +605,30 @@ const Empleado = () => {
               Actualizar
             </Button>
           </Form>
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={showReport} onHide={handleCloseReport}>
+        <Modal.Header closeButton>
+          <Modal.Title>Reporte de Empleado</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {reportData ? (
+            <table className="table table-striped">
+              <tbody>
+                {Object.entries(reportData).map(([key, value]) => (
+                  value !== null && (
+                    <tr key={key}>
+                      <td>{key}</td>
+                      <td>{new Date(value).toString() === "Invalid Date" ? value : new Date(value).toLocaleDateString()}</td>
+                    </tr>
+                  )
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>Cargando...</p>
+          )}
         </Modal.Body>
       </Modal>
     </div>
