@@ -13,7 +13,13 @@ Asegúrate de tener instalado Node.js y npm en tu máquina. Puedes descargarlos 
 ## Instalacion
 
   tener node version v20.14.0 y npm v10.7.0
+  
   Bajar repositorio 
+  
   comandos
+
+  
   npm install
+  
+  
   npm run
