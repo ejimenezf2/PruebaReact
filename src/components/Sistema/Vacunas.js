@@ -68,7 +68,7 @@ const Vacunas = () => {
     {
       columns,
       data: vacunas,
-      initialState: { pageIndex: 0, pageSize: 5 }, // Set initial page size
+      initialState: { pageIndex: 0, pageSize: 5 },
     },
     usePagination
   );
@@ -137,7 +137,7 @@ const Vacunas = () => {
       const response = await axios.delete(`http://localhost:5211/api/Vacuna/Eliminar/${id}`);
       if (response.data.isSuccess) {
         swal('Vacuna eliminada con éxito', '', 'success');
-        fetchVacunas(); // Actualiza la tabla después de eliminar
+        fetchVacunas(); 
       } else {
         swal('Error', 'Error al eliminar la vacuna', 'error');
         console.error('Error al eliminar la vacuna');
