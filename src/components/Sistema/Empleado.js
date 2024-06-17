@@ -81,7 +81,6 @@ const Empleado = () => {
       [name]: value
     }));
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const existingEmployee = data.find(emp => emp.cod_Empleado === parseInt(form.cod_Empleado));
@@ -94,13 +93,14 @@ const Empleado = () => {
       });
       return;
     }
-
+  
     const formData = {
       ...form,
       id_Vacuna: form.id_Vacuna === '' ? null : form.id_Vacuna,
-      fecha_Primer_Dosis: form.fecha_Primer_Dosis === '' ? null : form.fecha_Primer_Dosis
+      fecha_Primer_Dosis: form.fecha_Primer_Dosis === '' ? null : form.fecha_Primer_Dosis,
+      fecha_Segunda_Dosis: form.fecha_Segunda_Dosis === '' ? null : form.fecha_Segunda_Dosis
     };
-
+  
     axios.post('http://localhost:5211/api/Empleado/Crear', formData)
       .then(response => {
         fetchData();
@@ -118,6 +118,7 @@ const Empleado = () => {
           puesto_Laboral: '',
           id_Vacuna: '',
           fecha_Primer_Dosis: '',
+          fecha_Segunda_Dosis: '',
           estado_Vacunacion: '',
         });
       })
@@ -131,15 +132,16 @@ const Empleado = () => {
         });
       });
   };
-
+  
   const handleEditSubmit = (e) => {
     e.preventDefault();
     const formData = {
       ...editForm,
       id_Vacuna: editForm.id_Vacuna === '' ? null : editForm.id_Vacuna,
-      fecha_Primer_Dosis: editForm.fecha_Primer_Dosis === '' ? null : editForm.fecha_Primer_Dosis
+      fecha_Primer_Dosis: editForm.fecha_Primer_Dosis === '' ? null : editForm.fecha_Primer_Dosis,
+      fecha_Segunda_Dosis: editForm.fecha_Segunda_Dosis === '' ? null : editForm.fecha_Segunda_Dosis
     };
-
+  
     axios.put('http://localhost:5211/api/Empleado/Editar', formData)
       .then(response => {
         fetchData();
@@ -157,6 +159,7 @@ const Empleado = () => {
           puesto_Laboral: '',
           id_Vacuna: '',
           fecha_Primer_Dosis: '',
+          fecha_Segunda_Dosis: '',
           estado_Vacunacion: '',
         });
       })
@@ -164,6 +167,7 @@ const Empleado = () => {
         console.error('Error updating employee:', error);
       });
   };
+  
 
   const handleEditClick = (cod_Empleado) => {
     axios.get(`http://localhost:5211/api/Empleado/Obtener/${cod_Empleado}`)
@@ -172,6 +176,9 @@ const Empleado = () => {
         if (employee.fecha_Primer_Dosis) {
           employee.fecha_Primer_Dosis = new Date(employee.fecha_Primer_Dosis).toISOString().split('T')[0];
         }
+        if (employee.fecha_Segunda_Dosis) {
+          employee.fecha_Segunda_Dosis = new Date(employee.fecha_Segunda_Dosis).toISOString().split('T')[0];
+        }
         setEditForm(employee);
         handleShowEdit();
       })
@@ -179,6 +186,7 @@ const Empleado = () => {
         console.error('Error fetching employee data:', error);
       });
   };
+  
 
   const handleDeleteClick = (cod_Empleado) => {
     Swal.fire({
@@ -235,6 +243,11 @@ const Empleado = () => {
         Cell: ({ value }) => value ? new Date(value).toLocaleDateString() : 'N/A'
       },
       {
+        Header: 'Fecha Segunda Dosis',
+        accessor: 'fecha_Segunda_Dosis',
+        Cell: ({ value }) => value ? new Date(value).toLocaleDateString() : 'N/A'
+      },
+      {
         Header: 'Estado Vacuna',
         accessor: 'estado_Vacuna',
       },
@@ -287,7 +300,7 @@ const Empleado = () => {
           <div className="card">
             <div className="card-header d-flex justify-content-between align-items-center">
               <h3 className="card-title mb-0">Empleado</h3>
-              <button className="btn btn-primary ms-auto" onClick={handleShow} style={{ width: 'auto' }}>Crear</button>  
+              <button className="btn btn-primary ms-auto" onClick={handleShow} style={{ width: 'auto' }}>Crear</button>
             </div>
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center mb-3">
@@ -438,6 +451,15 @@ const Empleado = () => {
               />
             </Form.Group>
             <Form.Group>
+              <Form.Label>Fecha Segunda Dosis</Form.Label>
+              <Form.Control
+                type="date"
+                name="fecha_Segunda_Dosis"
+                value={form.fecha_Segunda_Dosis}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group>
               <Form.Label>Estado Vacuna</Form.Label>
               <Form.Control
                 as="select"
@@ -445,6 +467,7 @@ const Empleado = () => {
                 value={form.estado_Vacunacion}
                 onChange={handleChange}
                 required
+                className='mb-3'
               >
                 <option value="">Seleccione un estado</option>
                 {estadosVacuna.map(estado => (
@@ -535,6 +558,15 @@ const Empleado = () => {
               />
             </Form.Group>
             <Form.Group>
+              <Form.Label>Fecha Segunda Dosis</Form.Label>
+              <Form.Control
+                type="date"
+                name="fecha_Segunda_Dosis"
+                value={editForm.fecha_Segunda_Dosis}
+                onChange={handleEditChange}
+              />
+            </Form.Group>
+            <Form.Group>
               <Form.Label>Estado Vacuna</Form.Label>
               <Form.Control
                 as="select"
@@ -542,6 +574,7 @@ const Empleado = () => {
                 value={editForm.estado_Vacunacion}
                 onChange={handleEditChange}
                 required
+                className='mb-3'
               >
                 <option value="">Seleccione un estado</option>
                 {estadosVacuna.map(estado => (
@@ -551,7 +584,7 @@ const Empleado = () => {
                 ))}
               </Form.Control>
             </Form.Group>
-            <Button variant="primary" type="submit">
+            <Button variant="primary" className='mb-3' type="submit">
               Actualizar
             </Button>
           </Form>
