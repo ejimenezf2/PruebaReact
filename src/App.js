@@ -1,25 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Login from './components/Login/login';
+import AdminLayout from './components/Layouts/AdminLayout';
+import Dashboard from './components/Sistema/Dashboard';
+import Empleado from './components/Sistema/Empleado';
+import Vacuna from './components/Sistema/Vacunas';
+import PrivateRoute from './components/Login/PrivateRoute';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route
+          path="/dashboard/*"
+          element={
+            <PrivateRoute>
+              <AdminLayout>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                </Routes>
+              </AdminLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/empleado/*"
+          element={
+            <PrivateRoute>
+              <AdminLayout>
+                <Routes>
+                  <Route path="/" element={<Empleado />} />
+                </Routes>
+              </AdminLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/vacuna/*"
+          element={
+            <PrivateRoute>
+              <AdminLayout>
+                <Routes>
+                  <Route path="/" element={<Vacuna />} />
+                </Routes>
+              </AdminLayout>
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
